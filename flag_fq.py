@@ -12,5 +12,5 @@ samples={"sample":df.X,"dex":df.dex}
 ndf=pd.DataFrame.from_dict(ndf)
 samples=pd.DataFrame.from_dict(samples)
 
-pd.write_table(ndf,"units.tsv")
-pd.write_table(samples,"sample.tsv")
+ndf.to_csv("units.tsv",sep='\t')
+samples.to_csv("sample.tsv",sep='\t')
