@@ -27,7 +27,7 @@
 
     "feature_counts":
     {
-        "time": "1:00:00"
+        "time": "1:00:00",
         "mem":"8G",
         "cpus" : "5"
     }
