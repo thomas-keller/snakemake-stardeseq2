@@ -24,13 +24,15 @@ sbcmd+=" --out={cluster.output}"
 #             --jobs 10 --cluster-config cluster.json --cluster "$sbcmd" \
 #             --latency-wait 120 all1S
 
-cp ~/atacseq-snakemake/snakemake_sub.sh /work/t/tekeller/atac_toxo
-cp ~/atacseq-snakemake/cluster.json /work/t/tekeller/atac_toxo
-cp ~/atacseq-snakemake/config.yml /work/t/tekeller/atac_toxo
-cp ~/atacseq-snakemake/Snakefile /work/t/tekeller/atac_toxo
-cp ~/atacseq-snakemake/samples.json /work/t/tekeller/atac_toxo
+mkdir /work/t/tekeller/star_ex
 
-cd /work/t/tekeller/atac_toxo
+cp ~/snakemake-stardeseq2/snakemake_sub.sh /work/t/tekeller/star_ex
+cp ~/snakemake-stardeseq2/cluster.json /work/t/tekeller/star_ex
+cp ~/snakemake-stardeseq2/config.yml /work/t/tekeller/star_ex
+cp ~/snakemake-stardeseq2/Snakefile /work/t/tekeller/star_ex
+cp ~/snakemake-stardeseq2/samples.json /work/t/tekeller/star_ex
+
+cd /work/t/tekeller/star_ex
 
 source activate snakemake
 snakemake --unlock
