@@ -10,158 +10,27 @@
         "jobname":"Preprocess.{rule}.{wildcards}",
         "output" : "logs/slurm/{rule}.{wildcards}.out"
     },
-    "fastq" :
-    {
-        "time" : "2:00:00",
-        "mem":"8G",
-        "cpus":"1"
-    },
-    "trim_adapter" :
+
+    "trim_galore" :
     {
         "time" : "12:00:00",
         "mem":"16G",
         "cpus":"1"
     },
-    "clean_fastq" :
-    {
-        "time" : "10:00:00",
-        "mem":"32G",
-        "cpus":"8"
-    },
-    "align_cases_hg":
-    {
-        "time" : "6:00:00",
-        "mem": "24G",
-        "cpus" : "5"
-    },
-    "align_cases_toxo":
-    {
-        "time" : "6:00:00",
-        "mem": "24G",
-        "cpus" : "5"
-    },
-    "align_control":
-    {
-        "time" : "6:00:00",
-        "mem": "24G",
-        "cpus" : "5"
-    },
-    "ataqv":
-    {
-        "time" : "1:00:00"
 
-    },
-    "ataqv_cases":
-    {
-        "time" : "1:00:00"
-    },
-    "sort_bam":
-    {
-        "time" : "01:00:00",
-        "mem": "16G",
-        "cpus" : "5"
-    },
-    "index_bam":
-    {
-        "time" : "00:30:00"
-    },
-    "flagstat_hg_bam":
-    {
-        "time" : "00:30:00"
-    },
-    "flagstat_toxo_bam":
-    {
-        "time" : "00:30:00"
-    },
-    "flagstat_control_bam":
-    {
-        "time" : "00:30:00"
-    },
-    "phantom_peak_qual":
-    {
-        "time": "03:00:00",
-        "cpus" : "4"
-    },
-    "phantom_peak_hg_qual":
-    {
-        "time": "03:00:00",
-        "cpus" : "4"
-    },
-    "flagstat_chrM_exclude_bam_case":
-    {
-      "time" : "00:30:00"
-    },
-    "flagstat_chrM_exclude_bam_hg":
-    {
-      "time" : "00:30:00"
-    },
-    "down_sample":
-    {
-        "time" : "2:00",
-        "mem": "31G",
-        "cpus" : "5"
-    },
-    "down_sample_hg":
+    "align_star":
     {
         "time" : "2:00:00",
-        "mem": "31G",
+        "mem": "36G",
+        "cpus" : "20"
+    },
+
+    "feature_counts":
+    {
+        "time": "1:00:00"
+        "mem":"8G",
         "cpus" : "5"
-    },
-    "call_peaks_macs2":
-    {   "time" : "03:00:00"
-    },
-    "call_peaks_macs2_hg":
-    {   "time" : "03:00:00"
-    },
-    "make_bigwigs":
-    {
-        "time" : "03:00:00",
-        "mem": "31G",
-        "cpus" : "5"
-    },
-    "make_bigwigs_hg":
-    {
-        "time" : "03:00:00",
-        "mem": "31G",
-        "cpus" : "5"
-    },
-    "multiQC" :
-    {
-        "time" : "00:10:00"
-    },
-    "json_to_html":
-    {
-        "time": "00:30:00"
-    },
-    "remove_chrM_bam":
-    {
-        "time": "02:00:00",
-        "cpu": "5"
-    },
-    "remove_chrM_hg_bam":
-    {
-        "time": "02:00:00",
-        "cpu": "5"
-    },
-    "make_bed_nucleoATAC_ctl":
-    {
-        "time": "00:10"
-    },
-    "make_bed_nucleoATAC_hg":
-    {
-        "time": "00:10"
-    },
-    "nucleoATAC_ctl":
-    {
-        "time": "12:00",
-        "mem": "31G",
-        "cpu" : "5"
-    },
-    "nuceoATAC_hg":
-    {
-        "time": "12:00",
-        "mem": "31G",
-        "cpu" : "5"
     }
+
 
 }

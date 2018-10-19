@@ -32,10 +32,11 @@ units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]
 
 rule all:
 	input:
-		expand(["results/diffexp/{contrast}/diffexpr.tsv",
-				"results/diffexp/{contrast}/ma-plot.svg"]
-				contrast=config["diffexp"]["contrasts"]),
-				"results/pca.svg"
+		expand("fcounts/{sample}_counts.txt",sample=sample['sample'].tolist())
+		#expand(["results/diffexp/{contrast}/diffexpr.tsv",
+		#		"results/diffexp/{contrast}/ma-plot.svg"]
+		#		contrast=config["diffexp"]["contrasts"]),
+		#		"results/pca.svg"
 
 
 def get_fastq(wildcards):
@@ -44,12 +45,12 @@ def get_fastq(wildcards):
 rule trim_galore:
     input:  get_fastq
     output:
-		fastq1="trimmed/{sample}-{unit}.1.fastq.gz",
-		fastq2="trimmed/{sample}-{unit}.2.fastq.gz"
-		qc="trimmed/{sample}-{unit}.qc.txt"
-    log:    "logs/trim_galore/{sample}-{unit}.fastqc"
+		fastq1="trimmed/{sample}_1_trimmed.fq",
+		fastq2="trimmed/{sample}_2_trimmed.fq"
+		qc="trimmed/{sample}_1.fastq_trimming_report.txt","trimmed/{sample}_2.fastq_trimming_report.txt"
+    log:    "logs/trim_galore/{sample}.fastqc"
     threads: 1
-    params : jobname = "{sample}-{unit}"
+    params : jobname = "{sample}"
     message: "fastqc {input}: {threads}"
     shell:
         """
@@ -58,18 +59,27 @@ rule trim_galore:
 
 rule align_star:
 	input:
-		"trimmed/{sample}-{unit}.1.fastq.gz",
-		"trimmed/{sample}-{unit}.2.fastq.gz",
-
-	log: "logs/star/{sample}-{unit}.star"
+		"trimmed/{sample}_1_trimmed.fq",
+		"trimmed/{sample}_2_trimmed.fq"
+	output:
+		"star/{sample}/Aligned.out.bam",
+		"star/{sample}/ReadsPerGene.out.tab"
+	log: "logs/star/{sample}.star"
 
 	shell:
 		"""
-		STAR --genomeDir config['ref']['index'] --sjdbGTFfile config['ref']['annotation'] --outSAMtype BAM Unsorted --runThreadN 20 --readFilesIn {input[0]} {input[1]} --outFileNamePrefix {wildcard.sample}-{wildcard-unit}-
+		STAR --genomeDir config['ref']['index'] --sjdbGTFfile config['ref']['annotation'] --outSAMtype BAM Unsorted --runThreadN 20 --readFilesIn {input[0]} {input[1]} --outFileNamePrefix star/{wildcard.sample}/
 		"""
 
 rule feature_counts:
-	input:"{sample}-{unit}-Aligned.out.bam
+	input:"star/{sample}/Aligned.out.bam"
+	ouput:"fcounts/{sample}_counts.txt","fcounts/{sample}_results.bam"
+	log: "logs/feature_counts/{sample}.fcounts"
+	shell:
+	""
+	module add apps/subRead
+	featureCounts -T 5 -p -t exon -g gene_id -a config['ref]['annotation'] -o fcounts/{sample}_counts.txt fcounts/{sample}_results.bam
+	"""
 
 
 
