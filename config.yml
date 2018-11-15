@@ -11,7 +11,7 @@ ref:
   # the STAR index
   index: "/work/t/tekeller/refhg38"
   # gtf file with transcripts
-  annotation: "/work/t/tekeleller/refhg38/gencode.v28.annotation.gtf"
+  annotation: "/work/t/tekeller/refhg38/gencode.v28.annotation.gtf"
 
 pca:
   labels:

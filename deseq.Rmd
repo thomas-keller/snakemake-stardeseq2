@@ -1,0 +1,31 @@
+# Basic R markdown summarizing deseq results
+
+Having fully figured out how to use snakemake's report system, but if you are using R you may as well go a head and use knitr to make reports via that
+
+# mean vs standard deviation
+
+![meansd](meansd.png)
+
+# sample association
+
+![assoc](sample_assoc.png)
+
+# PCA
+
+![pca](pcaplot_sep.png)
+
+# maplot
+
+![maplot](maplot.png)
+
+# annotated heatmap
+
+![aheatmap](anno_heatmap.png)
+
+# list of significant genes
+library(knitr)
+```{r}
+df <- read.table('dex_deseq_sig.tsv')
+kable(df)
+```
+

@@ -13,8 +13,8 @@
 
     "trim_galore" :
     {
-        "time" : "12:00:00",
-        "mem":"16G",
+        "time" : "2:00:00",
+        "mem":"8G",
         "cpus":"1"
     },
 
@@ -22,15 +22,61 @@
     {
         "time" : "2:00:00",
         "mem": "36G",
-        "cpus" : "20"
+        "cpus" : "12"
     },
+
+    "kallisto_index":
+    {
+    "time":"2:00:00",
+    "mem":"16G",
+    "cpus":"12"
+    },
+
+    "align_kallisto":
+    {
+    "time": "4:00:00",
+    "mem":"16G",
+    "cpus":"12"
+    }, 
+    
+    "collate_kallisto":
+    {
+    "time":"1:00:00",
+    "mem":"16G",
+    "cpus":"8"
+    },
+      
 
     "feature_counts":
     {
         "time": "1:00:00",
         "mem":"8G",
         "cpus" : "5"
+    },
+    
+    "multiqc":
+    {
+        "time": "1:00:00",
+        "mem": "8G",
+        "cpus" : "1"
+    },
+    
+    "deseq":
+    {
+        "time": "12:00:00",
+        "mem": "24G",
+        "cpus" : "8"
+    },
+
+    "deseq_kal":
+    {
+        "time": "12:00:00",
+        "mem": "24G",
+        "cpus" :"8"
     }
 
+    
+   
+    
 
 }

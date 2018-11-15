@@ -5,8 +5,8 @@
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=2
 #SBATCH --mem=8G
-#SBATCH -o output.%j.%N.txt
-#SBATCH -e error.%j.%N.txt
+#SBATCH -o snakestar.e.%j.%N.txt
+#SBATCH -e snakestar.o.%j.%N.txt
 
 # this file is snakemake_sub.sh
 #submit with
@@ -24,16 +24,21 @@ sbcmd+=" --out={cluster.output}"
 #             --jobs 10 --cluster-config cluster.json --cluster "$sbcmd" \
 #             --latency-wait 120 all1S
 
-mkdir /work/t/tekeller/star_ex
+mkdir /work/t/tekeller/deseq2
 
-cp ~/snakemake-stardeseq2/snakemake_sub.sh /work/t/tekeller/star_ex
-cp ~/snakemake-stardeseq2/cluster.json /work/t/tekeller/star_ex
-cp ~/snakemake-stardeseq2/config.yml /work/t/tekeller/star_ex
-cp ~/snakemake-stardeseq2/Snakefile /work/t/tekeller/star_ex
-cp ~/snakemake-stardeseq2/samples.json /work/t/tekeller/star_ex
+cp ~/snakemake-stardeseq2/snakemake_sub.sh /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/cluster.json /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/config.yml /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/Snakefile /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/deseq_star.R /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/report/* /work/t/tekeller/deseq2_ex
+cp ~/snakemake-stardeseq2/deseq.Rmd /work/t/tekeller/deseq2_ex
+#cp ~/snakemake-stardeseq2/samples.json /work/t/tekeller/deseq2_ex
 
-cd /work/t/tekeller/star_ex
+cd /work/t/tekeller/deseq2_ex
 
 source activate snakemake
 snakemake --unlock
-snakemake -j8 -pr --cluster "sbatch --time={cluster.time} --partition={cluster.partition} --mem={cluster.mem} --cpus-per-task={cluster.cpus} --out={cluster.output}" --cluster-config cluster.json --keep-going --latency-wait 120 --rerun-incomplete
+snakemake -R deseq -j20 -pr --cluster "sbatch --time={cluster.time} --partition={cluster.partition} --mem={cluster.mem} --cpus-per-task={cluster.cpus} --out={cluster.output}" --cluster-config cluster.json --keep-going --latency-wait 900 --rerun-incomplete
+
+#snakemake --report report.html

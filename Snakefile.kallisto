@@ -33,10 +33,9 @@ units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]
 
 rule all:
     input:
-        "fcounts/gene_counts.txt",
-        "dex_deseq_star.csv",
-        expand("star/{sample}/Aligned.out.bam",sample=samples['sample'].tolist()),
-        ['meansd.png','sample_assoc.png','pcaplot.png','maplot.png','anno_heatmap.png']
+        expand("kallisto/{sample}/abundance.tsv",sample=samples['sample'].tolist()),
+        "multiqc_kal.html",
+        "dex_deseq_kal.csv"
         #expand(["results/diffexp/{contrast}/diffexpr.tsv",
         #		"results/diffexp/{contrast}/ma-plot.svg"]
         #		contrast=config["diffexp"]["contrasts"]),
@@ -51,8 +50,8 @@ rule trim_galore:
         "{sample}_1.fastq","{sample}_2.fastq"
     output:
         fastq1="trimmed/{sample}_1_val_1.fq",
-        qc1="trimmed/{sample}_1.fastq_trimming_report.txt",
         fastq2="trimmed/{sample}_2_val_2.fq",
+        qc1="trimmed/{sample}_1.fastq_trimming_report.txt",
         qc2="trimmed/{sample}_2.fastq_trimming_report.txt"
     log:    "logs/trim_galore/{sample}.fastqc"
     threads: 1
@@ -63,59 +62,53 @@ rule trim_galore:
         trim_galore --paired -o trimmed/ {input[0]} {input[1]}  2> {log}
         """
 
-rule align_star:
+rule kallisto_index:
+    input:
+        "/home/t/tekeller/toxo_kim/genomes/Homo_sapiens.GRCh38.cdna.all.fa"
+    output:
+        "kallisto/indices/GRC38.kaix"
+    log: "logs/kallisto/index.log"
+    shell:
+        """
+        module purge
+        module add apps/kallisto/0.43.1
+        kallisto index {input} -i {output} &> {log}
+        """  
+
+rule align_kallisto:
     input:
         "trimmed/{sample}_1_val_1.fq",
         "trimmed/{sample}_2_val_2.fq"
     output:
-        "star/{sample}/Aligned.out.bam",
-        "star/{sample}/ReadsPerGene.out.tab"
-    log: "logs/star/{sample}.star"
+        "kallisto/{sample}/abundance.tsv",
+    log: "logs/kallisto/{sample}.kallisto.log"
 
     shell:
         """
         module purge
-        module add apps/star
-        STAR --genomeDir {config[ref][index]} --sjdbGTFfile {config[ref][annotation]} --outSAMtype BAM Unsorted --quantMode GeneCounts --runThreadN 12 --readFilesIn {input[0]} {input[1]} --outFileNamePrefix star/{wildcards.sample}/ 2> {log}
+        module add apps/kallisto/0.43.1
+        kallisto quant --threads 12 --bias --bootstrap-samples=200 --plaintext -i kallisto/indices/GRC38.kaix -o kallisto/{wildcards.sample} {input[0]} {input[1]} &> {log}
         """
 
-rule feature_counts:
+rule deseq_kal:
     input:
-        expand("star/{sample}/Aligned.out.bam",sample=samples['sample'].tolist())
-    output:"fcounts/gene_counts.txt"
-    log: "logs/feature_counts/fcounts"
-    shell:
-        """
-        module add apps/subRead
-        featureCounts -T 5 -p -t exon -g gene_id -a {config[ref][annotation]} -o {output} {input} &> {log}
-        """
-
-rule multiqc:
-    input:
-        expand("star/{sample}/Log.final.out",sample=samples['sample'].tolist()),
+        expand("kallisto/{sample}/abundance.tsv", sample=samples['sample'].tolist())
     output:
-        "multiqc_report.html"
-    shell:
-        """
-        multiqc -f ./trimmed {input} fcounts/
-        """
-        
-rule deseq:
-    input:
-        "fcounts/gene_counts.txt"
-    output:
-        "dex_deseq_sig.tsv","meansd.png","maplot.png","sample_assoc.png","pcaplot_sep.png","anno_heatmap.png"
-        #report("sample_assoc.png,caption="report/heatmap.rst",category="PCA"),
-        #report("pcaplot_sep.png,caption="report/pca.rst",category="PCA"),
-        #report('maplot.png',caption="report/maplot.rst",category="maplot"),
-        #report('anno_heatmap.png",caption="report/annheatmap.rst",category="ann heat" ),
-        #report("dex_deseq_sig.tsv",caption="report/siggenes.rst",category="sig gene"),
-    log: "logs/deseq2/deseq.txt"
+        'dex_deseq_kal.csv'
+    log: "logs/kallisto/deseq_kal.log"
     shell:
         """
         source deactivate
-        source activate root
-        module purge
-        module add apps/R/3.5.0
-        Rscript deseq_star.R &> {log}
+        module add apps/R
+        Rscript deseq_kal.R {input} &> {log}
         """
+
+rule multiqc:
+    output:
+        "multiqc_kal.html"
+    log: "logs/multiqc/kal.log"
+    shell:
+        """
+        multiqc -n multiqc_kal.html trimmed/ logs/kallisto/
+        """
+        
